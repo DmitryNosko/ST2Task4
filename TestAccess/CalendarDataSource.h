@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
+extern NSString* const CalendarDataSourceCellWasSelectedNotification;
+extern NSString* const CalendarDataSourceCellWasSelectedNotificationKey;
+
 @interface CalendarDataSource : NSObject <UICollectionViewDataSource, UICollectionViewDelegate>
 @property (strong, nonatomic) UICollectionView * calendarCollectionView;
 @end

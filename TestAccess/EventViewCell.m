@@ -8,6 +8,7 @@
 
 #import "EventViewCell.h"
 #import "Event.h"
+#import "UIColor+CustomColor.h"
 
 @interface EventViewCell()
 @property (nonatomic) UILabel *label;
@@ -19,7 +20,7 @@
         self.label = [UILabel new];
         self.label.font = [UIFont boldSystemFontOfSize:17];
         self.label.numberOfLines = 0;
-        self.label.lineBreakMode = NSLineBreakByWordWrapping;
+        self.label.lineBreakMode = NSLineBreakByTruncatingHead;
         [self.contentView addSubview:self.label];
     }
     return self;
@@ -28,9 +29,9 @@
 - (void) setEvent:(Event *)event {
     _event = event;
     self.layer.borderColor = event.color.CGColor;
-    self.backgroundColor = [event.color colorWithAlphaComponent:0.2f];
+    self.backgroundColor = [event.color colorWithAlphaComponent:0.5f];
     self.label.text = event.title;
-    self.label.textColor = event.color;
+    self.label.textColor = [UIColor black];
     [self setNeedsLayout];
 }
 

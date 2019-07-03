@@ -16,6 +16,7 @@
 #import "HourReusableView.h"
 #import "EventViewCell.h"
 #import "EventStore.h"
+#import "UIColor+CustomColor.h"
 
 @interface MainViewController () <UICollectionViewDataSource, UICollectionViewDelegate, EventViewLayoutDelegate>
 
@@ -38,11 +39,11 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setUpTitle];
+    [self setUpTitle:[NSDate date]];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(calendarCellWasSelected:)
-                                                 name:CalendarCollectionViewCellWasSelectedNotification
+                                                 name:CalendarDataSourceCellWasSelectedNotification
                                                object:nil];
     
     self.eventsForCurrentDay = [NSMutableArray new];
@@ -52,6 +53,8 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     self.calendarCollectionView.pagingEnabled = YES;
     self.calendarCollectionView.showsHorizontalScrollIndicator = NO;
     self.calendarCollectionView.showsVerticalScrollIndicator = NO;
+    [self.calendarCollectionView setShowsHorizontalScrollIndicator:NO];
+    [self.calendarCollectionView setShowsVerticalScrollIndicator:NO];
     self.calendarCollectionView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
     self.calendarCollectionView.allowsSelection = YES;
     self.calendarCollectionView.dataSource = self.calendarDataManeger;
@@ -140,8 +143,9 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
 #pragma mark - Notification
 
 - (void) calendarCellWasSelected:(NSNotification*) notification {
-    if([[notification name] isEqualToString:CalendarCollectionViewCellWasSelectedNotification]) {
-        NSDate* currentDate = [notification.userInfo objectForKey:CalendarCollectionViewCellWasSelectedNotificationKey];
+    if([[notification name] isEqualToString:CalendarDataSourceCellWasSelectedNotification]) {
+        NSDate* currentDate = [notification.userInfo objectForKey:CalendarDataSourceCellWasSelectedNotificationKey];
+        [self setUpTitle:currentDate];
         [self getEventsForDate:currentDate];
     }
 }
@@ -199,13 +203,18 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
 
 #pragma mark - Title
 
-- (void) setUpTitle {
+- (void) setUpTitle:(NSDate*) date {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.dateFormat = @"d MMMM yyyy";
-    self.title = [dateFormatter stringFromDate:[NSDate date]];
-    [self.navigationController.navigationBar setBarTintColor:[UIColor blueColor]];
+    [dateFormatter setLocale: [NSLocale localeWithLocaleIdentifier: @"ru_RU"]];
+    self.title = [dateFormatter stringFromDate:date];
+    self.navigationController.navigationBar.translucent = NO;
+    [self.navigationController.navigationBar setBarTintColor:[UIColor blueDark]];
     [self.navigationController.navigationBar setTranslucent:NO];
+    [self.navigationController.navigationBar setTitleTextAttributes:
+     @{NSForegroundColorAttributeName:[UIColor white], NSFontAttributeName:[UIFont systemFontOfSize:17.0 weight:UIFontWeightSemibold]}];
 }
+
 
 #pragma mark - constraints
 

@@ -7,14 +7,12 @@
 //
 
 #import "CalendarCollectionViewCell.h"
+#import "UIColor+CustomColor.h"
 
 
 @interface CalendarCollectionViewCell ()
 @property (strong, nonatomic) UIView* selectedView;
 @end
-
-NSString* const CalendarCollectionViewCellWasSelectedNotification = @"CalendarCollectionViewCellWasSelectedNotification";
-NSString* const CalendarCollectionViewCellWasSelectedNotificationKey = @"CalendarCollectionViewCellWasSelectedNotificationKey";
 
 @implementation CalendarCollectionViewCell
 
@@ -31,12 +29,12 @@ NSString* const CalendarCollectionViewCellWasSelectedNotificationKey = @"Calenda
 
 - (void) setUp {
     
-    self.contentView.backgroundColor = [UIColor blueColor];
+    self.contentView.backgroundColor = [UIColor blueDark];
     
     self.selectedView = [UIView new];
     self.selectedView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:self.selectedView];
-    self.selectedView.backgroundColor = [UIColor redColor];
+    self.selectedView.backgroundColor = [UIColor red];
     self.selectedView.hidden = YES;
     
     [NSLayoutConstraint activateConstraints:@[
@@ -52,7 +50,7 @@ NSString* const CalendarCollectionViewCellWasSelectedNotificationKey = @"Calenda
     self.numberOfDayLabel = [UILabel new];
     self.numberOfDayLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.numberOfDayLabel.font = [UIFont systemFontOfSize:17 weight: UIFontWeightSemibold];
-    self.numberOfDayLabel.textColor = [UIColor greenColor];
+    self.numberOfDayLabel.textColor = [UIColor white];
     self.numberOfDayLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:self.numberOfDayLabel];
     
@@ -64,7 +62,7 @@ NSString* const CalendarCollectionViewCellWasSelectedNotificationKey = @"Calenda
     self.dayNameLabel = [UILabel new];
     self.dayNameLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.dayNameLabel.font = [UIFont systemFontOfSize:12];
-    self.dayNameLabel.textColor = [UIColor whiteColor];
+    self.dayNameLabel.textColor = [UIColor white];
     self.dayNameLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:self.dayNameLabel];
     
@@ -77,7 +75,7 @@ NSString* const CalendarCollectionViewCellWasSelectedNotificationKey = @"Calenda
     
     self.eventIndicatorView = [UIView new];
     self.eventIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.eventIndicatorView.backgroundColor = [UIColor whiteColor];
+    self.eventIndicatorView.backgroundColor = [UIColor white];
     self.eventIndicatorView.hidden = YES;
     [self.contentView addSubview:self.eventIndicatorView];
     
@@ -99,12 +97,8 @@ NSString* const CalendarCollectionViewCellWasSelectedNotificationKey = @"Calenda
 - (void) setSelected:(BOOL)selected {
     [super setSelected:selected];
     self.selectedView.hidden = selected ? NO : YES;
-    
-    NSDictionary* dictionary = [NSDictionary dictionaryWithObject:self.currentDate forKey:CalendarCollectionViewCellWasSelectedNotificationKey];
-    [[NSNotificationCenter defaultCenter] postNotificationName:CalendarCollectionViewCellWasSelectedNotification
-                                                        object:nil
-                                                      userInfo:dictionary];
 }
+
 
 
 

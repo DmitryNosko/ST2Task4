@@ -23,6 +23,11 @@
     MainViewController* mVc = [[MainViewController alloc] initWithNibName:@"MainViewController" bundle:nil];
     UINavigationController* nc = [[UINavigationController alloc] initWithRootViewController:mVc];
     
+    [[UINavigationBar appearance] setBackgroundImage: [UIImage new]
+                                       forBarMetrics: UIBarMetricsDefault];
+    
+    [UINavigationBar appearance].shadowImage = [UIImage new];
+    
     [self.window setRootViewController:nc];
     [self.window makeKeyAndVisible];
     

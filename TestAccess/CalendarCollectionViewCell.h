@@ -8,9 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSString* const CalendarCollectionViewCellWasSelectedNotification;
-extern NSString* const CalendarCollectionViewCellWasSelectedNotificationKey;
-
 @interface CalendarCollectionViewCell : UICollectionViewCell
 @property (strong, nonatomic) UILabel* dayNameLabel;
 @property (strong, nonatomic) UILabel* numberOfDayLabel;

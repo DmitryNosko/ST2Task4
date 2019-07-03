@@ -17,9 +17,13 @@
 @property (strong, nonatomic) NSDateFormatter *weekDayNumberformatter;
 @property (strong, nonatomic) NSDateFormatter *weekDayNameformatter;
 @property (strong, nonatomic) EKEventStore* eventStore;
+@property (assign, nonatomic) NSInteger lastHighlightedSection;
 @end
 
 static NSString* CALENDAR_CELL_IDENTIFIER = @"CalendarCollectionViewCell";
+
+NSString* const CalendarDataSourceCellWasSelectedNotification = @"CalendarCollectionViewCellWasSelectedNotification";
+NSString* const CalendarDataSourceCellWasSelectedNotificationKey = @"CalendarCollectionViewCellWasSelectedNotificationKey";
 
 @implementation CalendarDataSource
 
@@ -30,6 +34,7 @@ static NSString* CALENDAR_CELL_IDENTIFIER = @"CalendarCollectionViewCell";
     self = [super init];
     if (self) {
         
+        self.lastHighlightedSection = -1;
         self.eventStore = [EventStore getInstance];
         
         self.calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
@@ -77,11 +82,19 @@ static NSString* CALENDAR_CELL_IDENTIFIER = @"CalendarCollectionViewCell";
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
     CalendarCollectionViewCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:CALENDAR_CELL_IDENTIFIER forIndexPath:indexPath];
-    cell.numberOfDayLabel.text = [self getDayNumber:indexPath.section weekDay:indexPath.row];
-    cell.dayNameLabel.text = [self getDayName:indexPath.section weekDay:indexPath.row];
     NSDate* currentDate = [self getChoosenDate:indexPath.section weekDay:indexPath.row];
+    cell.numberOfDayLabel.text = [self getDayNumber:currentDate];
+    cell.dayNameLabel.text = [self getDayName:currentDate];
     cell.eventIndicatorView.hidden = ![self hasEventsAtDate:currentDate];
     cell.currentDate = currentDate;
+    
+    if ((self.lastHighlightedSection == indexPath.row)) {
+        [cell setSelected:YES];
+        NSDictionary* dictionary = [NSDictionary dictionaryWithObject:cell.currentDate forKey:CalendarDataSourceCellWasSelectedNotificationKey];
+        [[NSNotificationCenter defaultCenter] postNotificationName:CalendarDataSourceCellWasSelectedNotification
+                                                            object:nil
+                                                          userInfo:dictionary];
+    }
     
     return cell;
 }
@@ -102,18 +115,27 @@ static NSString* CALENDAR_CELL_IDENTIFIER = @"CalendarCollectionViewCell";
     return CGSizeMake(60, 60);
 }
 
-- (void)didTapOnImage:(UIStackView *)dayOfWeekView {
-    NSLog(@"tap");
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    CalendarCollectionViewCell* cell = (CalendarCollectionViewCell*)[collectionView cellForItemAtIndexPath:indexPath];
+    NSDictionary* dictionary = [NSDictionary dictionaryWithObject:cell.currentDate forKey:CalendarDataSourceCellWasSelectedNotificationKey];
+    [[NSNotificationCenter defaultCenter] postNotificationName:CalendarDataSourceCellWasSelectedNotification
+                                                        object:nil
+                                                      userInfo:dictionary];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
+    self.lastHighlightedSection = indexPath.row;
 }
 
 #pragma mark - date
 
-- (NSString *)getDayNumber:(NSUInteger)scrollViewChoosenWeek weekDay:(NSUInteger)weekDayNumber {
-    return [self.weekDayNumberformatter stringFromDate:[self getChoosenDate:scrollViewChoosenWeek weekDay:weekDayNumber]];
+- (NSString *)getDayNumber:(NSDate*) date {
+    return [self.weekDayNumberformatter stringFromDate:date];
 }
 
-- (NSString *)getDayName:(NSUInteger)scrollViewChoosenWeek weekDay:(NSUInteger)weekDayNumber {
-    return [self.weekDayNameformatter stringFromDate:[self getChoosenDate:scrollViewChoosenWeek weekDay:weekDayNumber]];
+- (NSString *)getDayName:(NSDate*) date {
+    return [self.weekDayNameformatter stringFromDate:date];
 }
 
 - (NSDate*) getChoosenDate:(NSUInteger)weekNumber weekDay:(NSUInteger)weekDayNumber {

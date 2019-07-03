@@ -52,7 +52,7 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
                 UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:cellIndexPath];
                 CGRect attributesFrame = attributes.frame;
                 attributesFrame.origin = CGPointMake(CalendarViewLayoutLeftPadding, posY);
-                attributesFrame.size = CGSizeMake(self.collectionView.bounds.size.width - CalendarViewLayoutLeftPadding - CalendarViewLayoutRightPadding, height);
+                attributesFrame.size = CGSizeMake(self.collectionView.bounds.size.width - CalendarViewLayoutRightPadding - CalendarViewLayoutLeftPadding, height);
                 attributes.frame = attributesFrame;
                 [self.cellAttributes addObject:attributes];
             }
