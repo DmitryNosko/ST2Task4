@@ -8,9 +8,13 @@
 
 #import "CalendarCollectionViewCell.h"
 
+
 @interface CalendarCollectionViewCell ()
 @property (strong, nonatomic) UIView* selectedView;
 @end
+
+NSString* const CalendarCollectionViewCellWasSelectedNotification = @"CalendarCollectionViewCellWasSelectedNotification";
+NSString* const CalendarCollectionViewCellWasSelectedNotificationKey = @"CalendarCollectionViewCellWasSelectedNotificationKey";
 
 @implementation CalendarCollectionViewCell
 
@@ -20,7 +24,6 @@
     self = [super initWithFrame:frame];
     if (self) {
         [self setUp];
-        _currentDay = [NSDate date];
     }
     return self;
 }
@@ -75,13 +78,16 @@
     self.eventIndicatorView = [UIView new];
     self.eventIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
     self.eventIndicatorView.backgroundColor = [UIColor whiteColor];
+    self.eventIndicatorView.hidden = YES;
     [self.contentView addSubview:self.eventIndicatorView];
     
     [NSLayoutConstraint activateConstraints:@[
+
                                               [self.eventIndicatorView.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor],
+                                              [self.eventIndicatorView.centerYAnchor constraintEqualToAnchor:self.contentView.centerYAnchor constant:18],
                                               [self.eventIndicatorView.centerXAnchor constraintEqualToAnchor:self.contentView.centerXAnchor],
                                               [self.eventIndicatorView.heightAnchor constraintEqualToConstant:5.0f],
-                                              [self.eventIndicatorView.widthAnchor constraintEqualToConstant:5.0f]
+                                              [self.eventIndicatorView.widthAnchor constraintEqualToConstant:13.0f]
                                               ]
      ];
     
@@ -93,6 +99,41 @@
 - (void) setSelected:(BOOL)selected {
     [super setSelected:selected];
     self.selectedView.hidden = selected ? NO : YES;
+    
+    NSDictionary* dictionary = [NSDictionary dictionaryWithObject:self.currentDate forKey:CalendarCollectionViewCellWasSelectedNotificationKey];
+    [[NSNotificationCenter defaultCenter] postNotificationName:CalendarCollectionViewCellWasSelectedNotification
+                                                        object:nil
+                                                      userInfo:dictionary];
 }
 
+
+
 @end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

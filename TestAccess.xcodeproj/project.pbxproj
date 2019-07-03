@@ -10,6 +10,7 @@
 		CE8386D722CB4C9C00A9A3D4 /* HourReusableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CE8386D622CB4C9C00A9A3D4 /* HourReusableView.m */; };
 		CE8386DA22CB4D5C00A9A3D4 /* EventViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CE8386D922CB4D5C00A9A3D4 /* EventViewCell.m */; };
 		CE8386DD22CB4EC500A9A3D4 /* EventViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = CE8386DC22CB4EC500A9A3D4 /* EventViewLayout.m */; };
+		CE86D56F22CCCB2900A88809 /* EventStore.m in Sources */ = {isa = PBXBuildFile; fileRef = CE86D56E22CCCB2900A88809 /* EventStore.m */; };
 		CE999A8122CA3D11000B65FD /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = CE999A8022CA3D11000B65FD /* Event.m */; };
 		CE999A8D22CA8D5A000B65FD /* CalendarCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CE999A8C22CA8D5A000B65FD /* CalendarCollectionViewCell.m */; };
 		CEE9576F22C8B50200287FF1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE9576E22C8B50200287FF1 /* AppDelegate.m */; };
@@ -31,6 +32,8 @@
 		CE8386D922CB4D5C00A9A3D4 /* EventViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EventViewCell.m; sourceTree = "<group>"; };
 		CE8386DB22CB4EC500A9A3D4 /* EventViewLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EventViewLayout.h; sourceTree = "<group>"; };
 		CE8386DC22CB4EC500A9A3D4 /* EventViewLayout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EventViewLayout.m; sourceTree = "<group>"; };
+		CE86D56D22CCCB2900A88809 /* EventStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EventStore.h; sourceTree = "<group>"; };
+		CE86D56E22CCCB2900A88809 /* EventStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EventStore.m; sourceTree = "<group>"; };
 		CE999A7F22CA3D10000B65FD /* Event.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Event.h; sourceTree = "<group>"; };
 		CE999A8022CA3D11000B65FD /* Event.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Event.m; sourceTree = "<group>"; };
 		CE999A8B22CA8D5A000B65FD /* CalendarCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CalendarCollectionViewCell.h; sourceTree = "<group>"; };
@@ -123,6 +126,8 @@
 				CE8386D922CB4D5C00A9A3D4 /* EventViewCell.m */,
 				CE8386D522CB4C9C00A9A3D4 /* HourReusableView.h */,
 				CE8386D622CB4C9C00A9A3D4 /* HourReusableView.m */,
+				CE86D56D22CCCB2900A88809 /* EventStore.h */,
+				CE86D56E22CCCB2900A88809 /* EventStore.m */,
 				CE8386D122CB4A7400A9A3D4 /* MainViewController */,
 				CE8386D022CB49F200A9A3D4 /* Event */,
 				CE8386CF22CB49D900A9A3D4 /* Calendar */,
@@ -225,6 +230,7 @@
 				CE8386D722CB4C9C00A9A3D4 /* HourReusableView.m in Sources */,
 				CEE9578922C8B9CB00287FF1 /* MainViewController.m in Sources */,
 				CEE9576F22C8B50200287FF1 /* AppDelegate.m in Sources */,
+				CE86D56F22CCCB2900A88809 /* EventStore.m in Sources */,
 				CE999A8D22CA8D5A000B65FD /* CalendarCollectionViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

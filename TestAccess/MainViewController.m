@@ -15,6 +15,7 @@
 #import "EventViewLayout.h"
 #import "HourReusableView.h"
 #import "EventViewCell.h"
+#import "EventStore.h"
 
 @interface MainViewController () <UICollectionViewDataSource, UICollectionViewDelegate, EventViewLayoutDelegate>
 
@@ -38,18 +39,21 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setUpTitle];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(calendarCellWasSelected:)
+                                                 name:CalendarCollectionViewCellWasSelectedNotification
+                                               object:nil];
+    
     self.eventsForCurrentDay = [NSMutableArray new];
     
     self.calendarDataManeger = [[CalendarDataSource alloc] init];
-
-
     self.calendarDataManeger.calendarCollectionView = self.calendarCollectionView;
     self.calendarCollectionView.pagingEnabled = YES;
     self.calendarCollectionView.showsHorizontalScrollIndicator = NO;
     self.calendarCollectionView.showsVerticalScrollIndicator = NO;
     self.calendarCollectionView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
     self.calendarCollectionView.allowsSelection = YES;
-    
     self.calendarCollectionView.dataSource = self.calendarDataManeger;
     self.calendarCollectionView.delegate = self.calendarDataManeger;
     [self.calendarCollectionView registerClass:[CalendarCollectionViewCell class] forCellWithReuseIdentifier:CALENDAR_CELL_IDENTIFIER];
@@ -105,6 +109,7 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     return [self eventAtIndex:indexPath.item].timespan;
 }
 
+
 #pragma mark - CheckPermission
 
 - (void)checkPermissionForCNContacts
@@ -113,11 +118,11 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     {
         case EKAuthorizationStatusNotDetermined:
         {
-            self.eventStore = [[EKEventStore alloc] init];
             self.calendar = [EKCalendar calendarForEntityType:EKEntityTypeEvent eventStore:self.eventStore];
             [self.eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError * _Nullable error) {
                 if (granted) {
-                    [self getEventsForCurrentDate];
+                    self.eventStore = [EventStore getInstance];
+                    [self getEventsForDate:[NSDate date]];
                 }
             }];
         }
@@ -126,36 +131,46 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
         case EKAuthorizationStatusDenied:
             break;
         case EKAuthorizationStatusAuthorized:
-            [self getEventsForCurrentDate];
+            self.eventStore = [EventStore getInstance];
+            [self getEventsForDate:[NSDate date]];
             break;
+    }
+}
+
+#pragma mark - Notification
+
+- (void) calendarCellWasSelected:(NSNotification*) notification {
+    if([[notification name] isEqualToString:CalendarCollectionViewCellWasSelectedNotification]) {
+        NSDate* currentDate = [notification.userInfo objectForKey:CalendarCollectionViewCellWasSelectedNotificationKey];
+        [self getEventsForDate:currentDate];
     }
 }
 
 #pragma mark - Events
 
-- (void) getEventsForCurrentDate {
-    if([EKEventStore class]) {
-        self.eventStore = [[EKEventStore alloc] init];
-        
-        NSCalendar *calendar = [NSCalendar currentCalendar];
-        NSDate *now = [NSDate date];
-        NSDate *startDate = [calendar dateBySettingHour:0  minute:0  second:0  ofDate:now options:0];
-        NSDate *endDate   = [calendar dateBySettingHour:23 minute:59 second:59 ofDate:now options:0];
+- (void) getEventsForDate:(NSDate*) date {
+    [self.eventsForCurrentDay removeAllObjects];
+    NSCalendar* calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
+    [calendar setTimeZone:[NSTimeZone localTimeZone]];
+    [calendar setFirstWeekday:2];
+    
+    NSDate *startDate = [calendar dateBySettingHour:0  minute:0  second:0  ofDate:date options:0];
+    NSDate *endDate   = [calendar dateBySettingHour:23 minute:59 second:59 ofDate:date options:0];
 
-        NSPredicate *predicate = [self.eventStore predicateForEventsWithStartDate:startDate
-                                                                           endDate:endDate
-                                                                         calendars:nil];
+    NSPredicate *predicate = [self.eventStore predicateForEventsWithStartDate:startDate
+                                                                        endDate:endDate
+                                                                        calendars:nil];
 
-        NSArray<EKEvent*>* events = [self.eventStore eventsMatchingPredicate:predicate];
+    NSArray<EKEvent*>* events = [self.eventStore eventsMatchingPredicate:predicate];
         
-        for (EKEvent* event in events) {
-            NSRange timespan = [self rangeFrom:event.startDate endDate:event.endDate];
-            UIColor *calendarColor = [UIColor colorWithCGColor:event.calendar.CGColor];
-            Event* todayEvent = [Event eventWithTitle:event.title timespan:timespan color:calendarColor];
+    for (EKEvent* event in events) {
+        NSRange timespan = [self rangeFrom:event.startDate endDate:event.endDate];
+        UIColor *calendarColor = [UIColor colorWithCGColor:event.calendar.CGColor];
+        Event* todayEvent = [Event eventWithTitle:event.title timespan:timespan color:calendarColor];
             
-            [self.eventsForCurrentDay addObject:todayEvent];
-        }
-}
+        [self.eventsForCurrentDay addObject:todayEvent];
+    }
+    [self.eventCollectionView reloadData];
 }
 
 - (Event *)eventAtIndex:(NSInteger)index {

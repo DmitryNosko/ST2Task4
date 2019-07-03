@@ -10,13 +10,12 @@
 
 @implementation DayOfWeekView
 
-- (instancetype)initWith:(NSString*) dayName numberOfDay:(NSInteger) numberOfDay hasEvent:(BOOL) hasEvent
+- (instancetype)initWith:(NSString*) dayName numberOfDay:(NSInteger) numberOfDay
 {
     self = [super init];
     if (self) {
         _dayName = dayName;
         _numberOfDay = numberOfDay;
-        _hasEvent = hasEvent;
     }
     return self;
 }

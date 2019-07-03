@@ -8,9 +8,15 @@
 
 #import "CalendarDataSource.h"
 #import "CalendarCollectionViewCell.h"
+#import <EventKit/EventKit.h>
+#import "EventStore.h"
 
 @interface CalendarDataSource ()
-@property (assign, nonatomic) NSInteger indexOfCellBeforeDragging; 
+@property (assign, nonatomic) NSInteger indexOfCellBeforeDragging;
+@property (strong, nonatomic) NSCalendar* calendar;
+@property (strong, nonatomic) NSDateFormatter *weekDayNumberformatter;
+@property (strong, nonatomic) NSDateFormatter *weekDayNameformatter;
+@property (strong, nonatomic) EKEventStore* eventStore;
 @end
 
 static NSString* CALENDAR_CELL_IDENTIFIER = @"CalendarCollectionViewCell";
@@ -23,6 +29,23 @@ static NSString* CALENDAR_CELL_IDENTIFIER = @"CalendarCollectionViewCell";
 {
     self = [super init];
     if (self) {
+        
+        self.eventStore = [EventStore getInstance];
+        
+        self.calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
+        [self.calendar setTimeZone:[NSTimeZone localTimeZone]];
+        [self.calendar setFirstWeekday:2];
+        
+        NSLocale *locale = [[NSLocale alloc]initWithLocaleIdentifier:@"ru"];
+        
+        self.weekDayNumberformatter = [[NSDateFormatter alloc] init];
+        [self.weekDayNumberformatter setLocale:locale];
+        [self.weekDayNumberformatter setDateFormat:@"dd"];
+        
+        self.weekDayNameformatter = [[NSDateFormatter alloc] init];
+        [self.weekDayNameformatter setLocale:locale];
+        [self.weekDayNameformatter setDateFormat:@"EE"];
+        
         self.indexOfCellBeforeDragging = 0;
     }
     return self;
@@ -43,62 +66,31 @@ static NSString* CALENDAR_CELL_IDENTIFIER = @"CalendarCollectionViewCell";
 
 #pragma mark - DataSource
 
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    return INFINITY;
+}
+
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 1000;
+    return 7;
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-
+    
     CalendarCollectionViewCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:CALENDAR_CELL_IDENTIFIER forIndexPath:indexPath];
-    cell.numberOfDayLabel.text = [self stringDateForWeek:indexPath.section weekDay:indexPath.row];
-    cell.dayNameLabel.text = [self stringWeekDayForWeek:indexPath.section weekDay:indexPath.row];
-    cell.eventIndicatorView.backgroundColor = [UIColor blackColor];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"d"];
-    NSDate *date = [dateFormatter dateFromString:[self stringDateForWeek:indexPath.section weekDay:indexPath.row]];
-    cell.currentDay = date;
+    cell.numberOfDayLabel.text = [self getDayNumber:indexPath.section weekDay:indexPath.row];
+    cell.dayNameLabel.text = [self getDayName:indexPath.section weekDay:indexPath.row];
+    NSDate* currentDate = [self getChoosenDate:indexPath.section weekDay:indexPath.row];
+    cell.eventIndicatorView.hidden = ![self hasEventsAtDate:currentDate];
+    cell.currentDate = currentDate;
     
     return cell;
 }
 
 #pragma mark - delegate
 
-//- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-//    self.indexOfCellBeforeDragging = [self indexOfMajorCell];
-//}
-//
-//- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
-//    // Stop scrollView sliding:
-//    targetContentOffset->x = scrollView.contentOffset.x;
-//    targetContentOffset->y = scrollView.contentOffset.y;
-//
-//    // calculate where scrollView should snap to:
-//    NSInteger indexOfMajorCell = [self indexOfMajorCell];
-//    CGFloat swipeVelocityThreshold = 0.5;
-//
-//    // calculate conditions:
-//    BOOL hasEnoughVelocityToSlideToTheNextCell = velocity.x > swipeVelocityThreshold;
-//    BOOL hasEnoughVelocityToSlideToThePreviousCell = self.indexOfCellBeforeDragging - 1 >= 0 && velocity.x < -swipeVelocityThreshold;
-//    NSInteger majorCellIsTheCellBeforeDragging = indexOfMajorCell == self.indexOfCellBeforeDragging;
-//    BOOL didUseSwipeToSkipCell = majorCellIsTheCellBeforeDragging && (hasEnoughVelocityToSlideToTheNextCell || hasEnoughVelocityToSlideToThePreviousCell);
-//
-//    UICollectionViewFlowLayout* collectionViewLayout = (UICollectionViewFlowLayout*)self.calendarCollectionView.collectionViewLayout;
-//    if (didUseSwipeToSkipCell) {
-//        NSInteger snapToIndex = self.indexOfCellBeforeDragging + (hasEnoughVelocityToSlideToTheNextCell ? 1 : -1);
-//        CGFloat toValue = collectionViewLayout.itemSize.width * (CGFloat)snapToIndex;
-//
-//        // Damping equal 1 => no oscillations => decay animation:
-//
-//        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
-//            scrollView.contentOffset = CGPointMake(toValue, 0);
-//            [scrollView layoutIfNeeded];
-//        } completion:nil];
-//    } else {
-//        // This is a much better way to scroll to a cell:
-//        NSIndexPath* indexPath = [NSIndexPath indexPathForRow:indexOfMajorCell inSection:0];
-//        [collectionViewLayout.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
-//    }
-//}
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self.calendarCollectionView reloadData];
+}
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
 {
@@ -114,49 +106,72 @@ static NSString* CALENDAR_CELL_IDENTIFIER = @"CalendarCollectionViewCell";
     NSLog(@"tap");
 }
 
-#pragma mark - calendar date
+#pragma mark - date
 
-- (NSString *)stringDateForWeek:(NSUInteger)week weekDay:(NSUInteger)weekDay {
-    NSCalendar *calendar = [[NSCalendar alloc]initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    [calendar setFirstWeekday:2];
-    NSDateComponents *components = [calendar components:NSCalendarUnitYearForWeekOfYear|NSCalendarUnitYear|NSCalendarUnitWeekOfYear|NSCalendarUnitWeekday fromDate:[NSDate date]];
-    weekDay = weekDay+1 == 7 ? 0 : weekDay +1;
-    [components setYearForWeekOfYear:2019];
-    [components setWeekOfYear:week];
-    [components setWeekday:weekDay+1];
-    NSDate *date = [calendar dateFromComponents:components];
-    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-    NSLocale *locale = [[NSLocale alloc]initWithLocaleIdentifier:@"ru"];
-    [formatter setLocale:locale];
-    [formatter setDateFormat:@"dd"];
-    return [formatter stringFromDate:date];
+- (NSString *)getDayNumber:(NSUInteger)scrollViewChoosenWeek weekDay:(NSUInteger)weekDayNumber {
+    return [self.weekDayNumberformatter stringFromDate:[self getChoosenDate:scrollViewChoosenWeek weekDay:weekDayNumber]];
 }
 
-- (NSString *)stringWeekDayForWeek:(NSUInteger)week weekDay:(NSUInteger)weekDay {
-    NSCalendar *calendar = [[NSCalendar alloc]initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    [calendar setFirstWeekday:2];
-    [calendar setTimeZone:[NSTimeZone localTimeZone]];
-    NSDateComponents *components = [calendar components:NSCalendarUnitYear|NSCalendarUnitWeekOfYear|NSCalendarUnitWeekday fromDate:[NSDate date]];
-    weekDay = weekDay+1 == 7 ? 0 : weekDay +1;
-    [components setYear:2019];
-    [components setWeekOfYear:week];
-    [components setWeekday:weekDay+1];
-    NSDate *date = [calendar dateFromComponents:components];
-    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-    NSLocale *locale = [[NSLocale alloc]initWithLocaleIdentifier:@"ru"];
-    [formatter setLocale:locale];
-    [formatter setDateFormat:@"EE"];
-    return [formatter stringFromDate:date];;
+- (NSString *)getDayName:(NSUInteger)scrollViewChoosenWeek weekDay:(NSUInteger)weekDayNumber {
+    return [self.weekDayNameformatter stringFromDate:[self getChoosenDate:scrollViewChoosenWeek weekDay:weekDayNumber]];
 }
 
-//- (NSInteger) indexOfMajorCell {
-//    UICollectionViewFlowLayout* collectionViewLayout = (UICollectionViewFlowLayout*)self.calendarCollectionView.collectionViewLayout;
-//    CGFloat itemWidth = collectionViewLayout.itemSize.width;
-//    double proportionalOffset = collectionViewLayout.collectionView.contentOffset.x / itemWidth;
-//    NSInteger index = round(proportionalOffset);
-//    NSInteger safeIndex = MAX(0, index);
-//    return safeIndex;
-//}
+- (NSDate*) getChoosenDate:(NSUInteger)weekNumber weekDay:(NSUInteger)weekDayNumber {
+    NSDateComponents *components = [self.calendar components:NSCalendarUnitYearForWeekOfYear|NSCalendarUnitYear|NSCalendarUnitWeekOfYear|NSCalendarUnitWeekday fromDate:[NSDate date]];
+    weekDayNumber = weekDayNumber + 1 == 7 ? 0 : weekDayNumber + 1;
+    NSUInteger currentWeekOfYear = components.weekOfYear;
+    [components setWeekOfYear:currentWeekOfYear + weekNumber];
+    [components setWeekday:weekDayNumber + 1];
+    return [self.calendar dateFromComponents:components];
+}
+
+#pragma mark - Has Event
+
+- (BOOL) hasEventsAtDate:(NSDate*) date {
+    
+    NSDate *startDate = [self.calendar dateBySettingHour:0  minute:0  second:0  ofDate:date options:0];
+    NSDate *endDate   = [self.calendar dateBySettingHour:23 minute:59 second:59 ofDate:date options:0];
+    
+    NSPredicate *predicate = [self.eventStore predicateForEventsWithStartDate:startDate
+                                                                            endDate:endDate
+                                                                            calendars:nil];
+    
+    NSArray<EKEvent*>* events = [self.eventStore eventsMatchingPredicate:predicate];
+    
+    return events.count > 0;
+}
+
 
 
 @end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
