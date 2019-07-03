@@ -62,11 +62,6 @@ NSString* const CalendarDataSourceCellWasSelectedNotificationKey = @"CalendarCol
     _calendarCollectionView.delegate = self;
     _calendarCollectionView.dataSource = self;
     [_calendarCollectionView registerClass:[CalendarCollectionViewCell class] forCellWithReuseIdentifier:CALENDAR_CELL_IDENTIFIER];
-    [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(update) userInfo:nil repeats:YES];
-}
-
-- (void) update {
-    [self.calendarCollectionView reloadData];
 }
 
 #pragma mark - DataSource

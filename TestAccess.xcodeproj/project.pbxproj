@@ -23,7 +23,6 @@
 		CEE9578922C8B9CB00287FF1 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE9578722C8B9CB00287FF1 /* MainViewController.m */; };
 		CEE9578A22C8B9CB00287FF1 /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEE9578822C8B9CB00287FF1 /* MainViewController.xib */; };
 		CEE9578D22C8BADB00287FF1 /* CalendarDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE9578C22C8BADB00287FF1 /* CalendarDataSource.m */; };
-		CEEF6CDD22C90CEF00B323C4 /* DayOfWeekView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEF6CDC22C90CEF00B323C4 /* DayOfWeekView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,8 +54,6 @@
 		CEE9578822C8B9CB00287FF1 /* MainViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
 		CEE9578B22C8BADB00287FF1 /* CalendarDataSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CalendarDataSource.h; sourceTree = "<group>"; };
 		CEE9578C22C8BADB00287FF1 /* CalendarDataSource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CalendarDataSource.m; sourceTree = "<group>"; };
-		CEEF6CDB22C90CEF00B323C4 /* DayOfWeekView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DayOfWeekView.h; sourceTree = "<group>"; };
-		CEEF6CDC22C90CEF00B323C4 /* DayOfWeekView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DayOfWeekView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,27 +68,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		CE8386CF22CB49D900A9A3D4 /* Calendar */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Calendar;
-			sourceTree = "<group>";
-		};
-		CE8386D022CB49F200A9A3D4 /* Event */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Event;
-			sourceTree = "<group>";
-		};
-		CE8386D122CB4A7400A9A3D4 /* MainViewController */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = MainViewController;
-			sourceTree = "<group>";
-		};
 		CEE9576122C8B50200287FF1 = {
 			isa = PBXGroup;
 			children = (
@@ -116,8 +92,6 @@
 				CEE9578C22C8BADB00287FF1 /* CalendarDataSource.m */,
 				CE999A8B22CA8D5A000B65FD /* CalendarCollectionViewCell.h */,
 				CE999A8C22CA8D5A000B65FD /* CalendarCollectionViewCell.m */,
-				CEEF6CDB22C90CEF00B323C4 /* DayOfWeekView.h */,
-				CEEF6CDC22C90CEF00B323C4 /* DayOfWeekView.m */,
 				CEE9578622C8B9CB00287FF1 /* MainViewController.h */,
 				CEE9578722C8B9CB00287FF1 /* MainViewController.m */,
 				CEE9578822C8B9CB00287FF1 /* MainViewController.xib */,
@@ -133,9 +107,6 @@
 				CE86D56E22CCCB2900A88809 /* EventStore.m */,
 				CE86D57222CCFA9900A88809 /* UIColor+CustomColor.h */,
 				CE86D57322CCFA9900A88809 /* UIColor+CustomColor.m */,
-				CE8386D122CB4A7400A9A3D4 /* MainViewController */,
-				CE8386D022CB49F200A9A3D4 /* Event */,
-				CE8386CF22CB49D900A9A3D4 /* Calendar */,
 				CEE9576D22C8B50200287FF1 /* AppDelegate.h */,
 				CEE9576E22C8B50200287FF1 /* AppDelegate.m */,
 				CEE9577322C8B50200287FF1 /* Main.storyboard */,
@@ -226,7 +197,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CEEF6CDD22C90CEF00B323C4 /* DayOfWeekView.m in Sources */,
 				CEE9578D22C8BADB00287FF1 /* CalendarDataSource.m in Sources */,
 				CEE9577D22C8B50800287FF1 /* main.m in Sources */,
 				CE8386DA22CB4D5C00A9A3D4 /* EventViewCell.m in Sources */,

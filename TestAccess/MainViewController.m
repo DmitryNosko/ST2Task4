@@ -26,6 +26,8 @@
 @property (strong, nonatomic) NSMutableArray<Event*>* eventsForCurrentDay;
 @property (strong, nonatomic) UICollectionView* eventCollectionView;
 @property (strong, nonatomic) EKCalendar* calendar;
+@property (strong, nonatomic) UIView* currentTimeLine;
+@property (strong, nonatomic) UILabel* currentTimeDate;
 
 @end
 
@@ -70,7 +72,17 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     self.eventCollectionView.dataSource = self;
     self.eventCollectionView.delegate = self;
     [self.view addSubview:self.eventCollectionView];
+        
+    self.currentTimeLine = [[UIView alloc] initWithFrame:CGRectMake(50, [self convertToMinutes:[NSDate date]] * 3 + 6, CGRectGetWidth(self.view.bounds), 3.4)];
+    self.currentTimeLine.backgroundColor = [UIColor red];
+    [self.eventCollectionView addSubview:self.currentTimeLine];
     
+    self.currentTimeDate = [[UILabel alloc] initWithFrame:CGRectMake(5, [self convertToMinutes:[NSDate date]] * 3 - 12, 50, 15)];
+    self.currentTimeDate.backgroundColor = [UIColor white];
+    self.currentTimeDate.text = [self strFroCurrentDate];
+    [self.eventCollectionView addSubview:self.currentTimeDate];
+    
+    [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
     
     [self setUpConstraintsForEventsView];
     [self setUpConstraintsForCalendarView];
@@ -80,15 +92,31 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     
 }
 
+- (NSString*) strFroCurrentDate {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"HH:mm"];
+    NSDate *currentDate = [NSDate date];
+    return [dateFormatter stringFromDate:currentDate];
+}
+
+- (void)timerFired:(NSTimer*) timer{
+    [UIView animateWithDuration:0.3 animations:^{
+        self.currentTimeLine.frame = CGRectMake(self.currentTimeLine.frame.origin.x, self.currentTimeLine.frame.origin.y + 3.4, self.currentTimeLine.frame.size.width, self.currentTimeLine.frame.size.height);
+        
+        
+        self.currentTimeDate.frame = CGRectMake(self.currentTimeDate.frame.origin.x, self.currentTimeDate.frame.origin.y + 3.4, self.currentTimeDate.frame.size.width, self.currentTimeDate.frame.size.height);
+        self.currentTimeDate.text = [self strFroCurrentDate];
+    } completion:^(BOOL finished) {
+    }];
+}
+
 #pragma mark - UICollectionViewDataSource
 
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return self.eventsForCurrentDay.count;
 }
 
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     EventViewCell *view = [collectionView dequeueReusableCellWithReuseIdentifier:EVENT_CELL_IDENTIFIER forIndexPath:indexPath];
     view.event = [self eventAtIndex:indexPath.item];
     return view;
@@ -96,27 +124,25 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
 
 #pragma mark - Delegate
 
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
-{
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     HourReusableView *view = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:HOUR_VIEW_IDENTIFIER forIndexPath:indexPath];
     if (indexPath.item % 4 == 0) {
         [view setTime:[NSString stringWithFormat:@"%@:00", @(indexPath.item / 4)]];
-    }else {
+    } else {
         [view setTime:@""];
     }
+    
     return view;
 }
 
-- (NSRange)calendarViewLayout:(EventViewLayout *)layout timespanForCellAtIndexPath:(NSIndexPath *)indexPath
-{
+- (NSRange)calendarViewLayout:(EventViewLayout *)layout timespanForCellAtIndexPath:(NSIndexPath *)indexPath {
     return [self eventAtIndex:indexPath.item].timespan;
 }
 
 
 #pragma mark - CheckPermission
 
-- (void)checkPermissionForCNContacts
-{
+- (void)checkPermissionForCNContacts {
     switch ([EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent])
     {
         case EKAuthorizationStatusNotDetermined:
@@ -181,7 +207,6 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     return self.eventsForCurrentDay[index];
 }
 
-
 - (NSRange) rangeFrom:(NSDate*) startDate endDate:(NSDate*) endDate{
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"HH:mm"];
@@ -199,6 +224,20 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     NSUInteger len = endHour * 60 + endMinute - loc;
 
     return NSMakeRange(loc, len);
+}
+
+- (NSInteger) convertToMinutes:(NSDate*) date {
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"HH:mm"];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+
+    NSDate *todaydate = [dateFormat dateFromString:[dateFormat  stringFromDate:[NSDate date]]];
+    
+    NSDateComponents *startDateComponents = [calendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:todaydate];
+    NSInteger startHour = [startDateComponents hour];
+    NSInteger startMinute = [startDateComponents minute];
+    
+    return startHour * 60 + startMinute;
 }
 
 #pragma mark - Title
@@ -237,26 +276,6 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
                                               [self.eventCollectionView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
                                               ]];
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @end

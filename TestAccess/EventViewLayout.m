@@ -16,8 +16,9 @@ static const CGFloat CalendarViewLayoutTimeLinePadding = 6.0f;
 static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
 
 @interface EventViewLayout ()
-@property (nonatomic) NSMutableArray *cellAttributes;
-@property (nonatomic) NSMutableArray *hourAttributes;
+@property (nonatomic) NSMutableArray* cellAttributes;
+@property (nonatomic) NSMutableArray* hourAttributes;
+@property (nonatomic) UICollectionViewLayoutAttributes* lineAtribute;
 @end
 
 @implementation EventViewLayout
@@ -31,7 +32,7 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
 }
 
 - (CGSize) collectionViewContentSize {
-    return CGSizeMake(self.collectionView.bounds.size.width, CalendarViewLayoutHourViewHeight * 96 + CalendarViewLayoutTimeLinePadding); // visota
+    return CGSizeMake(self.collectionView.bounds.size.width, CalendarViewLayoutHourViewHeight * 96 + CalendarViewLayoutTimeLinePadding);
 }
 
 - (void) prepareLayout {
@@ -55,6 +56,8 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
                 attributesFrame.size = CGSizeMake(self.collectionView.bounds.size.width - CalendarViewLayoutRightPadding - CalendarViewLayoutLeftPadding, height);
                 attributes.frame = attributesFrame;
                 [self.cellAttributes addObject:attributes];
+            
+
             }
         }
     }
@@ -90,32 +93,5 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     return allAttributes;
 }
 
-- (UICollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewLayoutAttributes *attributes = nil;
-    NSInteger index = [self.cellAttributes indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        UICollectionViewLayoutAttributes *attributes = obj;
-        *stop = [attributes.indexPath isEqual:indexPath];
-        return *stop;
-    }];
-    
-    if (index != NSNotFound) {
-        attributes = [self.cellAttributes objectAtIndex:index];
-    }
-    return attributes;
-}
-
-- (UICollectionViewLayoutAttributes *) layoutAttributesForSupplementaryViewOfKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewLayoutAttributes *attributes = nil;
-    NSInteger index = [self.hourAttributes indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        UICollectionViewLayoutAttributes *attributes = obj;
-        *stop = [attributes.indexPath isEqual:indexPath];
-        return *stop;
-    }];
-    
-    if (index != NSNotFound) {
-        attributes = [self.hourAttributes objectAtIndex:index];
-    }
-    return attributes;
-}
 
 @end
