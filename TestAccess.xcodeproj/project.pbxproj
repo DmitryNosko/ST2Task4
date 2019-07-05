@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE58D66322CFC841005F81C9 /* EventRepository.m in Sources */ = {isa = PBXBuildFile; fileRef = CE58D66222CFC841005F81C9 /* EventRepository.m */; };
+		CE58D66722CFCD46005F81C9 /* NSCalendar+CustomCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = CE58D66622CFCD46005F81C9 /* NSCalendar+CustomCalendar.m */; };
+		CE58D66A22CFCE4F005F81C9 /* NSDateFormatter+CustomDateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CE58D66922CFCE4F005F81C9 /* NSDateFormatter+CustomDateFormatter.m */; };
+		CE58D66D22CFCFEB005F81C9 /* NSDate+CustomDate.m in Sources */ = {isa = PBXBuildFile; fileRef = CE58D66C22CFCFEB005F81C9 /* NSDate+CustomDate.m */; };
 		CE8386D722CB4C9C00A9A3D4 /* HourReusableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CE8386D622CB4C9C00A9A3D4 /* HourReusableView.m */; };
 		CE8386DA22CB4D5C00A9A3D4 /* EventViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CE8386D922CB4D5C00A9A3D4 /* EventViewCell.m */; };
 		CE8386DD22CB4EC500A9A3D4 /* EventViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = CE8386DC22CB4EC500A9A3D4 /* EventViewLayout.m */; };
@@ -26,6 +30,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CE58D66122CFC841005F81C9 /* EventRepository.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EventRepository.h; sourceTree = "<group>"; };
+		CE58D66222CFC841005F81C9 /* EventRepository.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EventRepository.m; sourceTree = "<group>"; };
+		CE58D66522CFCD46005F81C9 /* NSCalendar+CustomCalendar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSCalendar+CustomCalendar.h"; sourceTree = "<group>"; };
+		CE58D66622CFCD46005F81C9 /* NSCalendar+CustomCalendar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSCalendar+CustomCalendar.m"; sourceTree = "<group>"; };
+		CE58D66822CFCE4F005F81C9 /* NSDateFormatter+CustomDateFormatter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDateFormatter+CustomDateFormatter.h"; sourceTree = "<group>"; };
+		CE58D66922CFCE4F005F81C9 /* NSDateFormatter+CustomDateFormatter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSDateFormatter+CustomDateFormatter.m"; sourceTree = "<group>"; };
+		CE58D66B22CFCFEB005F81C9 /* NSDate+CustomDate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSDate+CustomDate.h"; path = "../NSDate+CustomDate.h"; sourceTree = "<group>"; };
+		CE58D66C22CFCFEB005F81C9 /* NSDate+CustomDate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSDate+CustomDate.m"; path = "../NSDate+CustomDate.m"; sourceTree = "<group>"; };
 		CE8386D522CB4C9C00A9A3D4 /* HourReusableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HourReusableView.h; sourceTree = "<group>"; };
 		CE8386D622CB4C9C00A9A3D4 /* HourReusableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HourReusableView.m; sourceTree = "<group>"; };
 		CE8386D822CB4D5C00A9A3D4 /* EventViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EventViewCell.h; sourceTree = "<group>"; };
@@ -68,6 +80,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE58D66422CFC84C005F81C9 /* EventRepository */ = {
+			isa = PBXGroup;
+			children = (
+				CE58D66122CFC841005F81C9 /* EventRepository.h */,
+				CE58D66222CFC841005F81C9 /* EventRepository.m */,
+			);
+			name = EventRepository;
+			sourceTree = "<group>";
+		};
 		CE84B96022CDEEA3005CD303 /* Calendar */ = {
 			isa = PBXGroup;
 			children = (
@@ -81,6 +102,7 @@
 		CE84B96122CDEFAB005CD303 /* Event */ = {
 			isa = PBXGroup;
 			children = (
+				CE58D66422CFC84C005F81C9 /* EventRepository */,
 				CE8386DB22CB4EC500A9A3D4 /* EventViewLayout.h */,
 				CE8386DC22CB4EC500A9A3D4 /* EventViewLayout.m */,
 				CE8386D822CB4D5C00A9A3D4 /* EventViewCell.h */,
@@ -107,8 +129,14 @@
 		CE84B96622CDF102005CD303 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				CE58D66B22CFCFEB005F81C9 /* NSDate+CustomDate.h */,
+				CE58D66C22CFCFEB005F81C9 /* NSDate+CustomDate.m */,
 				CE86D57222CCFA9900A88809 /* UIColor+CustomColor.h */,
 				CE86D57322CCFA9900A88809 /* UIColor+CustomColor.m */,
+				CE58D66522CFCD46005F81C9 /* NSCalendar+CustomCalendar.h */,
+				CE58D66622CFCD46005F81C9 /* NSCalendar+CustomCalendar.m */,
+				CE58D66822CFCE4F005F81C9 /* NSDateFormatter+CustomDateFormatter.h */,
+				CE58D66922CFCE4F005F81C9 /* NSDateFormatter+CustomDateFormatter.m */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -247,13 +275,17 @@
 			files = (
 				CEE9578D22C8BADB00287FF1 /* CalendarDataSource.m in Sources */,
 				CEE9577D22C8B50800287FF1 /* main.m in Sources */,
+				CE58D66322CFC841005F81C9 /* EventRepository.m in Sources */,
 				CE8386DA22CB4D5C00A9A3D4 /* EventViewCell.m in Sources */,
 				CE999A8122CA3D11000B65FD /* Event.m in Sources */,
 				CE8386DD22CB4EC500A9A3D4 /* EventViewLayout.m in Sources */,
 				CE8386D722CB4C9C00A9A3D4 /* HourReusableView.m in Sources */,
 				CEE9578922C8B9CB00287FF1 /* MainViewController.m in Sources */,
+				CE58D66722CFCD46005F81C9 /* NSCalendar+CustomCalendar.m in Sources */,
 				CEE9576F22C8B50200287FF1 /* AppDelegate.m in Sources */,
+				CE58D66D22CFCFEB005F81C9 /* NSDate+CustomDate.m in Sources */,
 				CE86D56F22CCCB2900A88809 /* EventStore.m in Sources */,
+				CE58D66A22CFCE4F005F81C9 /* NSDateFormatter+CustomDateFormatter.m in Sources */,
 				CE86D57422CCFA9900A88809 /* UIColor+CustomColor.m in Sources */,
 				CE999A8D22CA8D5A000B65FD /* CalendarCollectionViewCell.m in Sources */,
 			);

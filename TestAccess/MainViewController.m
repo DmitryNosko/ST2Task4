@@ -17,23 +17,21 @@
 #import "EventViewCell.h"
 #import "EventStore.h"
 #import "UIColor+CustomColor.h"
-
-static NSInteger const MINUTES_IN_HOUR = 60;
+#import "NSCalendar+CustomCalendar.h"
+#import "NSDateFormatter+CustomDateFormatter.h"
+#import "NSDate+CustomDate.m"
+#import "EventRepository.h"
 
 @interface MainViewController () <UICollectionViewDataSource, UICollectionViewDelegate, EventViewLayoutDelegate>
 
 @property (strong, nonatomic) IBOutlet UICollectionView *calendarCollectionView;
-@property (strong, nonatomic) EKEventStore* eventStore;
-@property (strong, nonatomic) CalendarDataSource* calendarDataManeger;
-@property (strong, nonatomic) NSMutableArray<Event*>* eventsForCurrentDay;
 @property (strong, nonatomic) UICollectionView* eventCollectionView;
-@property (strong, nonatomic) EKCalendar* calendar;
+@property (strong, nonatomic) EKEventStore* eventStore;
+@property (strong, nonatomic) EventRepository* eventRepository;
+@property (strong, nonatomic) NSMutableArray<Event*>* eventsForCurrentDay;
+@property (strong, nonatomic) CalendarDataSource* calendarDataSource;
 @property (strong, nonatomic) UIView* currentTimeLine;
 @property (strong, nonatomic) UILabel* currentTimeDate;
-@property (strong, nonatomic) NSDateFormatter* hourMinuteDateFormatter;
-@property (strong, nonatomic) NSDateFormatter* dayMonthYearDateFormatter;
-@property (strong, nonatomic) NSCalendar* Gregoriancalendar;
-
 @end
 
 static NSString* CALENDAR_CELL_IDENTIFIER = @"CalendarCollectionViewCell";
@@ -46,9 +44,8 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self initDateFormatters];
+    self.eventStore = [EventStore getInstance];
     [self setUpTitle:[NSDate date]];
-    [self initCalendar];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(calendarCellWasSelected:)
                                                  name:CalendarDataSourceCellWasSelectedNotification
@@ -60,7 +57,7 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     [self setUpConstraintsForCalendarView];
     [self initTimeLine];
     
-    [NSTimer scheduledTimerWithTimeInterval:MINUTES_IN_HOUR target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
+    [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
 
     [self checkPermissionForCNContacts];
 }
@@ -90,7 +87,7 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     return view;
 }
 
-- (NSRange)calendarViewLayout:(EventViewLayout *)layout timespanForCellAtIndexPath:(NSIndexPath *)indexPath {
+- (NSRange)calendarViewLayout:(EventViewLayout*)layout timespanForCellAtIndexPath:(NSIndexPath *)indexPath {
     return [self eventAtIndex:indexPath.item].timespan;
 }
 
@@ -100,22 +97,20 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
 - (void)checkPermissionForCNContacts {
     switch ([EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent])
     {
+        case EKAuthorizationStatusRestricted:
+        case EKAuthorizationStatusDenied:
         case EKAuthorizationStatusNotDetermined:
         {
-            self.calendar = [EKCalendar calendarForEntityType:EKEntityTypeEvent eventStore:self.eventStore];
             [self.eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError * _Nullable error) {
                 if (granted) {
-                    self.eventStore = [EventStore getInstance];
+                    self.eventRepository = [[EventRepository alloc] initWithEventStore:self.eventStore];
                     [self getEventsForDate:[NSDate date]];
                 }
             }];
         }
             break;
-        case EKAuthorizationStatusRestricted:
-        case EKAuthorizationStatusDenied:
-            break;
         case EKAuthorizationStatusAuthorized:
-            self.eventStore = [EventStore getInstance];
+            self.eventRepository = [[EventRepository alloc] initWithEventStore:self.eventStore];
             [self getEventsForDate:[NSDate date]];
             break;
     }
@@ -128,7 +123,7 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
         self.currentTimeLine.frame = CGRectMake(self.currentTimeLine.frame.origin.x, self.currentTimeLine.frame.origin.y + 3.4, self.currentTimeLine.frame.size.width, self.currentTimeLine.frame.size.height);
         
         self.currentTimeDate.frame = CGRectMake(self.currentTimeDate.frame.origin.x, self.currentTimeDate.frame.origin.y + 3.4, self.currentTimeDate.frame.size.width, self.currentTimeDate.frame.size.height);
-        self.currentTimeDate.text = [self strFroCurrentDate];
+        self.currentTimeDate.text = [NSDate strFromCurrentDate];
     } completion:^(BOOL finished) {
     }];
 }
@@ -148,18 +143,10 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
 
 - (void) getEventsForDate:(NSDate*) date {
     [self.eventsForCurrentDay removeAllObjects];
-    
-    NSDate *startDate = [self.Gregoriancalendar dateBySettingHour:0  minute:0  second:0  ofDate:date options:0];
-    NSDate *endDate   = [self.Gregoriancalendar dateBySettingHour:23 minute:59 second:59 ofDate:date options:0];
-
-    NSPredicate *predicate = [self.eventStore predicateForEventsWithStartDate:startDate
-                                                                        endDate:endDate
-                                                                        calendars:nil];
-
-    NSArray<EKEvent*>* events = [self.eventStore eventsMatchingPredicate:predicate];
+    NSArray<EKEvent*>* events = [self.eventRepository getEventsForDate:date];
         
     for (EKEvent* event in events) {
-        NSRange timespan = [self rangeFrom:event.startDate endDate:event.endDate];
+        NSRange timespan = [NSDate rangeFrom:event.startDate endDate:event.endDate];
         UIColor *calendarColor = [UIColor colorWithCGColor:event.calendar.CGColor];
         Event* todayEvent = [Event eventWithTitle:event.title timespan:timespan color:calendarColor];
             
@@ -172,39 +159,10 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     return self.eventsForCurrentDay[index];
 }
 
-- (NSRange) rangeFrom:(NSDate*) startDate endDate:(NSDate*) endDate{
-    NSDateComponents *startDateComponents = [self.Gregoriancalendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:startDate];
-    NSInteger startHour = [startDateComponents hour];
-    NSInteger startMinute = [startDateComponents minute];
-    
-    NSDateComponents *endDateComponents = [self.Gregoriancalendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:endDate];
-    NSInteger endHour = [endDateComponents hour];
-    NSInteger endMinute = [endDateComponents minute];
-    
-    NSUInteger loc = startHour * MINUTES_IN_HOUR + startMinute;
-    NSUInteger len = endHour * MINUTES_IN_HOUR + endMinute - loc;
-
-    return NSMakeRange(loc, len);
-}
-
-- (NSInteger) convertToMinutes:(NSDate*) date {
-    NSDate *todaydate = [self.hourMinuteDateFormatter dateFromString:[self.hourMinuteDateFormatter  stringFromDate:[NSDate date]]];
-    NSDateComponents *startDateComponents = [self.Gregoriancalendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:todaydate];
-    NSInteger startHour = [startDateComponents hour];
-    NSInteger startMinute = [startDateComponents minute];
-    
-    return startHour * MINUTES_IN_HOUR + startMinute;
-}
-
-- (NSString*) strFroCurrentDate {
-    NSDate *currentDate = [NSDate date];
-    return [self.hourMinuteDateFormatter stringFromDate:currentDate];
-}
-
 #pragma mark - Title
 
 - (void) setUpTitle:(NSDate*) date {
-    self.title = [self.dayMonthYearDateFormatter stringFromDate:date];
+    self.title = [[NSDateFormatter dayMonthYearFormatter] stringFromDate:date];
     self.navigationController.navigationBar.translucent = NO;
     [self.navigationController.navigationBar setBarTintColor:[UIColor blueDark]];
     [self.navigationController.navigationBar setTranslucent:NO];
@@ -212,34 +170,16 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
      @{NSForegroundColorAttributeName:[UIColor white], NSFontAttributeName:[UIFont systemFontOfSize:17.0 weight:UIFontWeightSemibold]}];
 }
 
-#pragma mark - CalendarInit
-- (void) initCalendar {
-    self.Gregoriancalendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
-    [self.Gregoriancalendar setTimeZone:[NSTimeZone localTimeZone]];
-    [self.Gregoriancalendar setFirstWeekday:2];
-}
-
-#pragma mark - DateFormattersInit
-
-- (void) initDateFormatters {
-    self.hourMinuteDateFormatter = [[NSDateFormatter alloc] init];
-    [self.hourMinuteDateFormatter setDateFormat:@"HH:mm"];
-    
-    self.dayMonthYearDateFormatter = [[NSDateFormatter alloc] init];
-    [self.dayMonthYearDateFormatter setDateFormat:@"d MMMM yyyy"];
-    [self.dayMonthYearDateFormatter setLocale:[NSLocale localeWithLocaleIdentifier: @"ru_RU"]];
-}
-
 #pragma mark - TimeLineInit
 
 - (void) initTimeLine {
-    self.currentTimeLine = [[UIView alloc] initWithFrame:CGRectMake(50, [self convertToMinutes:[NSDate date]] * 3 + 6, CGRectGetWidth(self.view.bounds), 3.4)];
+    self.currentTimeLine = [[UIView alloc] initWithFrame:CGRectMake(55, [NSDate convertToMinutes:[NSDate date]] * 3 + 6, CGRectGetWidth(self.view.bounds), 3.4)];
     self.currentTimeLine.backgroundColor = [UIColor red];
     [self.eventCollectionView addSubview:self.currentTimeLine];
     
-    self.currentTimeDate = [[UILabel alloc] initWithFrame:CGRectMake(5, [self convertToMinutes:[NSDate date]] * 3 - 12, 50, 15)];
+    self.currentTimeDate = [[UILabel alloc] initWithFrame:CGRectMake(10, [NSDate convertToMinutes:[NSDate date]] * 3 - 12, 50, 15)];
     self.currentTimeDate.backgroundColor = [UIColor white];
-    self.currentTimeDate.text = [self strFroCurrentDate];
+    self.currentTimeDate.text = [NSDate strFromCurrentDate];
     [self.eventCollectionView addSubview:self.currentTimeDate];
     
 }
@@ -247,8 +187,8 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
 #pragma mark - CollectionViewInit
 
 - (void) initCollectionViews {
-    self.calendarDataManeger = [[CalendarDataSource alloc] init];
-    self.calendarDataManeger.calendarCollectionView = self.calendarCollectionView;
+    self.calendarDataSource = [[CalendarDataSource alloc] init];
+    self.calendarDataSource.calendarCollectionView = self.calendarCollectionView;
     self.calendarCollectionView.pagingEnabled = YES;
     self.calendarCollectionView.showsHorizontalScrollIndicator = NO;
     self.calendarCollectionView.showsVerticalScrollIndicator = NO;
@@ -256,8 +196,8 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     [self.calendarCollectionView setShowsVerticalScrollIndicator:NO];
     self.calendarCollectionView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
     self.calendarCollectionView.allowsSelection = YES;
-    self.calendarCollectionView.dataSource = self.calendarDataManeger;
-    self.calendarCollectionView.delegate = self.calendarDataManeger;
+    self.calendarCollectionView.dataSource = self.calendarDataSource;
+    self.calendarCollectionView.delegate = self.calendarDataSource;
     [self.calendarCollectionView registerClass:[CalendarCollectionViewCell class] forCellWithReuseIdentifier:CALENDAR_CELL_IDENTIFIER];
     
     
