@@ -11,7 +11,7 @@
 #import "UIColor+CustomColor.h"
 
 @interface EventViewCell()
-@property (nonatomic) UILabel *label;
+@property (strong, nonatomic) UILabel* label;
 @end
 
 @implementation EventViewCell
@@ -26,7 +26,7 @@
     return self;
 }
 
-- (void) setEvent:(Event *)event {
+- (void) setEvent:(Event*)event {
     _event = event;
     self.layer.borderColor = event.color.CGColor;
     self.backgroundColor = [event.color colorWithAlphaComponent:0.5f];

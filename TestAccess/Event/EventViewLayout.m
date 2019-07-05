@@ -47,10 +47,10 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
                 NSIndexPath *cellIndexPath = [NSIndexPath indexPathForItem:j inSection:i];
                 NSRange timespan = [calendarViewLayoutDelegate calendarViewLayout:self timespanForCellAtIndexPath:cellIndexPath];
 
-                CGFloat posY = timespan.location * 3 + CalendarViewLayoutTimeLinePadding;
-                CGFloat height = timespan.length * 3;
+                CGFloat posY = timespan.location * Multiply + CalendarViewLayoutTimeLinePadding;
+                CGFloat height = timespan.length * Multiply;
                 
-                UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:cellIndexPath];
+                UICollectionViewLayoutAttributes* attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:cellIndexPath];
                 CGRect attributesFrame = attributes.frame;
                 attributesFrame.origin = CGPointMake(CalendarViewLayoutLeftPadding, posY);
                 attributesFrame.size = CGSizeMake(self.collectionView.bounds.size.width - CalendarViewLayoutRightPadding - CalendarViewLayoutLeftPadding, height);
@@ -63,7 +63,7 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     }
     
     for (NSInteger i = 0; i < 96; i++) {
-        UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:HOUR_VIEW_IDENTIFIER withIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
+        UICollectionViewLayoutAttributes* attributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:HOUR_VIEW_IDENTIFIER withIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
         CGRect attributesFrame = CGRectZero;
         attributesFrame.size = CGSizeMake(self.collectionView.bounds.size.width, CalendarViewLayoutHourViewHeight);
         if (i == 95) {
@@ -75,16 +75,16 @@ static NSString* HOUR_VIEW_IDENTIFIER = @"HourView";
     }
 }
 
-- (NSArray *) layoutAttributesForElementsInRect:(CGRect)rect {
+- (NSArray*) layoutAttributesForElementsInRect:(CGRect)rect {
     NSMutableArray *allAttributes = [NSMutableArray new];
     
-    for (UICollectionViewLayoutAttributes *attributes in self.cellAttributes) {
+    for (UICollectionViewLayoutAttributes* attributes in self.cellAttributes) {
         if (CGRectIntersectsRect(rect, attributes.frame)) {
             [allAttributes addObject:attributes];
         }
     }
     
-    for (UICollectionViewLayoutAttributes *attributes in self.hourAttributes) {
+    for (UICollectionViewLayoutAttributes* attributes in self.hourAttributes) {
         if (CGRectIntersectsRect(rect, attributes.frame)) {
             [allAttributes addObject:attributes];
         }

@@ -11,14 +11,14 @@
 static const CGFloat HourReusableViewTimeLineTopPadding = 6.0f;
 
 @interface HourReusableView()
-@property (nonatomic) UILabel *timeLabel;
-@property (nonatomic) UIView *timeLineView;
+@property (strong, nonatomic) UILabel* timeLabel;
+@property (strong, nonatomic) UIView* timeLineView;
 
 @end
 
 @implementation HourReusableView
 
-- (instancetype)initWithFrame:(CGRect)frame {
+- (instancetype) initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
         self.timeLabel = [UILabel new];
         self.timeLabel.font = [UIFont systemFontOfSize:17];
@@ -33,7 +33,7 @@ static const CGFloat HourReusableViewTimeLineTopPadding = 6.0f;
     return self;
 }
 
-- (void)layoutSubviews {
+- (void) layoutSubviews {
     [super layoutSubviews];
     CGRect timeLabelFrame = self.timeLabel.frame;
     timeLabelFrame.origin.x = 0;
@@ -45,7 +45,7 @@ static const CGFloat HourReusableViewTimeLineTopPadding = 6.0f;
     self.timeLineView.frame = timeLineFrame;
 }
 
-- (void)setTime:(NSString *)time {
+- (void) setTime:(NSString*)time {
     self.timeLabel.text = time;
     [self.timeLabel sizeToFit];
     [self setNeedsLayout];

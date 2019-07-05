@@ -68,6 +68,69 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE84B96022CDEEA3005CD303 /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				CE999A8B22CA8D5A000B65FD /* CalendarCollectionViewCell.h */,
+				CE999A8C22CA8D5A000B65FD /* CalendarCollectionViewCell.m */,
+				CE84B96822CDF300005CD303 /* CalendarDataSource */,
+			);
+			name = Calendar;
+			sourceTree = "<group>";
+		};
+		CE84B96122CDEFAB005CD303 /* Event */ = {
+			isa = PBXGroup;
+			children = (
+				CE8386DB22CB4EC500A9A3D4 /* EventViewLayout.h */,
+				CE8386DC22CB4EC500A9A3D4 /* EventViewLayout.m */,
+				CE8386D822CB4D5C00A9A3D4 /* EventViewCell.h */,
+				CE8386D922CB4D5C00A9A3D4 /* EventViewCell.m */,
+				CE8386D522CB4C9C00A9A3D4 /* HourReusableView.h */,
+				CE8386D622CB4C9C00A9A3D4 /* HourReusableView.m */,
+				CE86D56D22CCCB2900A88809 /* EventStore.h */,
+				CE86D56E22CCCB2900A88809 /* EventStore.m */,
+				CE84B96A22CDF34D005CD303 /* EventModel */,
+			);
+			path = Event;
+			sourceTree = "<group>";
+		};
+		CE84B96222CDF03F005CD303 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				CEE9578622C8B9CB00287FF1 /* MainViewController.h */,
+				CEE9578722C8B9CB00287FF1 /* MainViewController.m */,
+				CEE9578822C8B9CB00287FF1 /* MainViewController.xib */,
+			);
+			name = ViewController;
+			sourceTree = "<group>";
+		};
+		CE84B96622CDF102005CD303 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				CE86D57222CCFA9900A88809 /* UIColor+CustomColor.h */,
+				CE86D57322CCFA9900A88809 /* UIColor+CustomColor.m */,
+			);
+			path = Categories;
+			sourceTree = "<group>";
+		};
+		CE84B96822CDF300005CD303 /* CalendarDataSource */ = {
+			isa = PBXGroup;
+			children = (
+				CEE9578B22C8BADB00287FF1 /* CalendarDataSource.h */,
+				CEE9578C22C8BADB00287FF1 /* CalendarDataSource.m */,
+			);
+			path = CalendarDataSource;
+			sourceTree = "<group>";
+		};
+		CE84B96A22CDF34D005CD303 /* EventModel */ = {
+			isa = PBXGroup;
+			children = (
+				CE999A7F22CA3D10000B65FD /* Event.h */,
+				CE999A8022CA3D11000B65FD /* Event.m */,
+			);
+			path = EventModel;
+			sourceTree = "<group>";
+		};
 		CEE9576122C8B50200287FF1 = {
 			isa = PBXGroup;
 			children = (
@@ -88,27 +151,12 @@
 		CEE9576C22C8B50200287FF1 /* TestAccess */ = {
 			isa = PBXGroup;
 			children = (
-				CEE9578B22C8BADB00287FF1 /* CalendarDataSource.h */,
-				CEE9578C22C8BADB00287FF1 /* CalendarDataSource.m */,
-				CE999A8B22CA8D5A000B65FD /* CalendarCollectionViewCell.h */,
-				CE999A8C22CA8D5A000B65FD /* CalendarCollectionViewCell.m */,
-				CEE9578622C8B9CB00287FF1 /* MainViewController.h */,
-				CEE9578722C8B9CB00287FF1 /* MainViewController.m */,
-				CEE9578822C8B9CB00287FF1 /* MainViewController.xib */,
-				CE999A7F22CA3D10000B65FD /* Event.h */,
-				CE999A8022CA3D11000B65FD /* Event.m */,
-				CE8386DB22CB4EC500A9A3D4 /* EventViewLayout.h */,
-				CE8386DC22CB4EC500A9A3D4 /* EventViewLayout.m */,
-				CE8386D822CB4D5C00A9A3D4 /* EventViewCell.h */,
-				CE8386D922CB4D5C00A9A3D4 /* EventViewCell.m */,
-				CE8386D522CB4C9C00A9A3D4 /* HourReusableView.h */,
-				CE8386D622CB4C9C00A9A3D4 /* HourReusableView.m */,
-				CE86D56D22CCCB2900A88809 /* EventStore.h */,
-				CE86D56E22CCCB2900A88809 /* EventStore.m */,
-				CE86D57222CCFA9900A88809 /* UIColor+CustomColor.h */,
-				CE86D57322CCFA9900A88809 /* UIColor+CustomColor.m */,
-				CEE9576D22C8B50200287FF1 /* AppDelegate.h */,
+				CE84B96622CDF102005CD303 /* Categories */,
+				CE84B96222CDF03F005CD303 /* ViewController */,
+				CE84B96122CDEFAB005CD303 /* Event */,
+				CE84B96022CDEEA3005CD303 /* Calendar */,
 				CEE9576E22C8B50200287FF1 /* AppDelegate.m */,
+				CEE9576D22C8B50200287FF1 /* AppDelegate.h */,
 				CEE9577322C8B50200287FF1 /* Main.storyboard */,
 				CEE9577622C8B50800287FF1 /* Assets.xcassets */,
 				CEE9577822C8B50800287FF1 /* LaunchScreen.storyboard */,

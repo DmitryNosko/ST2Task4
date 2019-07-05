@@ -1,5 +1,5 @@
 //
-//  HourReusableView.h
+//  EventViewCell.h
 //  TestAccess
 //
 //  Created by USER on 7/2/19.
@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HourReusableView : UICollectionReusableView
-- (void)setTime:(NSString *)time;
+@class Event;
+
+@interface EventViewCell : UICollectionViewCell
+@property (strong, nonatomic) Event* event;
 @end

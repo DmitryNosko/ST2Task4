@@ -12,9 +12,9 @@
 @interface Event : NSObject
 
 @property (assign, nonatomic) NSRange timespan;
-@property (strong, nonatomic) NSString *title;
-@property (strong, nonatomic) UIColor *color;
+@property (strong, nonatomic) NSString* title;
+@property (strong, nonatomic) UIColor* color;
 
-+ (Event *)eventWithTitle:(NSString *)title timespan:(NSRange)timespan color:(UIColor *)color;
++ (Event *)eventWithTitle:(NSString*)title timespan:(NSRange)timespan color:(UIColor*)color;
 
 @end
